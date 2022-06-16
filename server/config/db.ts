@@ -1,6 +1,5 @@
-import mongoose,{ Schema, model, connect} from 'mongoose';
+import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { ConnectionOptions } from 'tls';
 dotenv.config();
 
 

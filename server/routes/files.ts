@@ -27,7 +27,7 @@ router.post("/upload",upload.single("myFile"),async (req,res)=>{
               if (error instanceof Error) {
                 errorMessage = error.message;
               }
-            return res.status(400).json({message: "Cloudinary Error"});
+            return res.status(400).json({message: errorMessage});
         }
         const {originalname} = req.file ;
         const {secure_url,bytes,format} = uploadedFile;
@@ -39,7 +39,7 @@ router.post("/upload",upload.single("myFile"),async (req,res)=>{
         });
         res.status(200).json({
             id:file._id,
-            downloadPaegLink:`${process.env.API_BASE_ENDPOINT_CLIENT}download/${file._id} `
+            downloadPageLink:`${process.env.API_BASE_ENDPOINT_CLIENT}download/${file._id} `
         });
     }catch(error){
        let  errorMessage = 'Server Error :(';
