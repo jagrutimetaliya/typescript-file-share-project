@@ -53,14 +53,14 @@ export default function Home() {
 
 
         {/** upload button */}
-        { !downloadPageLink && file && <button className="p-2 my-5 bg-gray-900 rounded-md w-44 focus:outline-none" onClick={handleUpload}>{uploadState}</button>
+        { !downloadPageLink && file && <button className="button" onClick={handleUpload}>{uploadState}</button>
 }
         {downloadPageLink && 
           <div className="p-2 text-center">
 
               <DownloadFile downloadPageLink={downloadPageLink}/>
               {/** Email Form */}
-              <button className="p-2 my-5 bg-gray-900 rounded-md w-44 focus:outline-none" onClick={resetComponent}>Upload New File</button>
+              <button className="button" onClick={resetComponent}>Upload New File</button>
           </div>}
 
 
