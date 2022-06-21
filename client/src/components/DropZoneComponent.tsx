@@ -16,7 +16,6 @@ const {getRootProps,getInputProps,isDragAccept,isDragReject} = useDropzone({onDr
         'image/jpeg': ['.jpeg'],
         'audio/mpeg': ['.mpeg'],
       }});
-      console.log(isDragAccept, isDragReject);
     return (
         <div className="w-full p-4">
             <div {...getRootProps()} className="w-full h-80 rounded-md cursor-pointer focus:outline-none">

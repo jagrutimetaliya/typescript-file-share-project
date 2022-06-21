@@ -1,13 +1,21 @@
 import express from 'express';
 import multer from "multer";
 import https from 'https';
-const router = express.Router();
-const storage = multer.diskStorage({});
 import {UploadApiResponse, v2 as cloudinary} from 'cloudinary';
 import File from '../models/File';
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+import createEmailTemplate from '../utils/createEmailTemplate';
+
+const router = express.Router();
+const storage = multer.diskStorage({});
+dotenv.config();
+
 let upload = multer({
     storage
 })
+
+
 router.post("/upload",upload.single("myFile"),async (req,res)=>{
     try{
       
@@ -40,7 +48,7 @@ router.post("/upload",upload.single("myFile"),async (req,res)=>{
         });
         res.status(200).json({
             id:file._id,
-            downloadPageLink:`${process.env.API_BASE_ENDPOINT_CLIENT}download/${file._id} `
+            downloadPageLink:`${process.env.API_BASE_ENDPOINT_CLIENT}download/${file._id}`
         });
     }catch(error){
        let  errorMessage = 'Server Error :(';
@@ -92,8 +100,48 @@ router.get("/:id/download", async(req,res) => {
          res.status(500).json({message : errorMessage})
     }
 });
-router.post("/email", (req,res) =>{
-    
-})
+router.post("/email", async (req,res) =>{
+    const {id,emailFrom,emailTo} = req.body;
+    const file = await File.findById(id)
+    if(!file){
+        return res.status(404).json({message : "File does not exist"})
+    }
+
+    let transporter = nodemailer.createTransport({
+        //@ts-ignore
+        host: process.env.SENDINBLUE_SMTP_HOST!,
+        port: process.env.SENDINBLUE_SMTP_PORT,
+        secure: false,
+        auth: {
+            user: process.env.SENDINBLUE_SMTP_USER,
+            pass: process.env.SENDINBLUE_SMTP_PASSWORD,
+        },
+    });
+    const {filename,sizeInBytes} = file;
+    const filesize = `${( Number(sizeInBytes) / (1024 * 1024)).toString()} MB `;
+    const downloadPageLink =`${process.env.API_BASE_ENDPOINT_CLIENT}download/${id}`
+    const mailOption = {
+        from : emailFrom,
+        to : emailTo,
+        subject : 'File shared with you',
+        text: `${emailFrom} shared a file with you`,
+        html : createEmailTemplate(emailFrom,downloadPageLink,filename,filesize),
+    }
+     
+    transporter.sendMail(mailOption, async (error,info) =>{
+        if(error){
+            console.log(error);
+            return res.status(500).json({
+                message: "Server Error :(",
+            })
+        }
+        file.sender = emailFrom;
+        file.receiver = emailTo;
+        await file.save();
+        return res.status(200).json({message : "Email sent"})
+    })
+});
+
+
 
 export default router;
