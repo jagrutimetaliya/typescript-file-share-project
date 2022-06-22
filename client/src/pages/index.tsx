@@ -3,11 +3,11 @@ import RenderFile from "@components/RenderFile";
 import { useState } from "react";
 import axios from 'axios';
 import DownloadFile from "@components/DownloadFile";
+import EmailForm from "@components/EmailForm";
 
 export default function Home() {
   const [file,setFile] = useState(null);
   const [id,setId] = useState(null)
-  
   const [downloadPageLink,setDownloadPageLink] = useState(null)
   const [uploadState,setUploadState] = useState<"Uploading"|"Upload Failed"|"Uploaded"|"Upload">("Upload")
   
@@ -59,6 +59,7 @@ export default function Home() {
 
               <DownloadFile downloadPageLink={downloadPageLink}/>
               {/** Email Form */}
+              <EmailForm id={id}/>
               <button className="button" onClick={resetComponent}>Upload New File</button>
           </div>}
 
