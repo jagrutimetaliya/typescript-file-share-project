@@ -100,12 +100,17 @@ router.get("/:id/download", async(req,res) => {
          res.status(500).json({message : errorMessage})
     }
 });
+
 router.post("/email", async (req,res) =>{
     const {id,emailFrom,emailTo} = req.body;
+
+    if(!id || !emailFrom || !emailTo) return res.status(400).json({message: 'All fields are required'});
     const file = await File.findById(id)
     if(!file){
         return res.status(404).json({message : "File does not exist"})
     }
+
+    if(file.sender) return res.status(400).json({message : "File is already exist"})
 
     let transporter = nodemailer.createTransport({
         //@ts-ignore
